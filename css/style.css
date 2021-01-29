@@ -1207,6 +1207,9 @@ body.light hr.separator {
 .blog-post .meta i {
   padding-right: 3px;
 }
+.blog-post article img{
+  max-width: 100%;
+}
 
 /* [ RESPONSIVE DESIGN STYLES ] */
 

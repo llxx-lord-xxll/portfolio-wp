@@ -164,6 +164,10 @@ function add_body_classes( $classes ) {
         $classes[] = $post->post_name;
     }
 
+    if ( is_single() && 'post' == get_post_type() ) {
+        $classes[] = 'blog-post';
+    }
+
     if ( is_front_page() && is_home() ) {
         // Default homepage
     } elseif ( is_front_page() ) {
@@ -648,3 +652,8 @@ function handle_contact(){
     }
 }
 
+
+function wp_portfolio_custom_excerpt_length( $length ) {
+    return 20;
+}
+add_filter( 'excerpt_length', 'wp_portfolio_custom_excerpt_length', 999 );
