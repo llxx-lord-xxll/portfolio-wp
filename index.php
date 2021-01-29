@@ -1,18 +1,29 @@
 <?php get_header(); ?>
 
-	<main role="main" aria-label="Content">
-		<!-- section -->
-		<section>
+<?php
+$posts_page = get_option( 'page_for_posts' );
+?>
+<section class="title-section text-left text-sm-center revealator-slideup revealator-once revealator-delay1">
+    <h1>MY <span>BLOG</span></h1>
+    <?php if ($posts_page): ?>
+    <span class="title-bg"><?php the_field('subtitle',$posts_page); ?></span>
+    <?php endif; ?>
+</section>
 
-			<h1><?php esc_html_e( 'Latest Posts', 'html5blank' ); ?></h1>
+<section class="main-content revealator-slideup revealator-once revealator-delay1">
+    <div class="container">
+        <!-- Articles Starts -->
+        <div class="row">
 
 			<?php get_template_part( 'loop' ); ?>
 
 			<?php get_template_part( 'pagination' ); ?>
 
-		</section>
-		<!-- /section -->
-	</main>
+        </div>
+        <!-- Articles Ends -->
+    </div>
+
+</section>
 
 <?php get_sidebar(); ?>
 

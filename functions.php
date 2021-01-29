@@ -157,6 +157,27 @@ function menu_item_li_class($classes, $item, $args) {
     return $classes;
 }
 
+add_filter( 'body_class','add_body_classes' );
+function add_body_classes( $classes ) {
+    global $post;
+    if (isset($post->post_name)){
+        $classes[] = $post->post_name;
+    }
+
+    if ( is_front_page() && is_home() ) {
+        // Default homepage
+    } elseif ( is_front_page() ) {
+        // static homepage
+    } elseif ( is_home() ) {
+        $classes[] = 'blog';
+    } else {
+        //everyting else
+    }
+
+    return $classes;
+
+}
+
 // Load HTML5 Blank scripts (header.php)
 function html5blank_header_scripts() {
     if ( $GLOBALS['pagenow'] != 'wp-login.php' && ! is_admin() ) {
@@ -174,12 +195,14 @@ function html5blank_header_scripts() {
             wp_register_script( 'hoverdir', get_template_directory_uri() . '/js/jquery.hoverdir.js', array()  ,'' , true);
             wp_register_script( 'popper', get_template_directory_uri() . '/js/popper.min.js', array()  ,'' , true);
             wp_register_script( 'bootstrap', get_template_directory_uri() . '/js/bootstrap.js', array() ,'4.4.1' , true);
+            wp_register_script( 'modernizr', get_template_directory_uri() . '/js/modernizr.custom.js', array() ,'2.7.1' , false);
 
             // Custom scripts
             wp_register_script(
                 'custom',
                 get_template_directory_uri() . '/js/custom.js',
                 array(
+                    'modernizr',
                     'jquery',
                     'bootstrap',
                     'styleswitcher',
@@ -193,8 +216,9 @@ function html5blank_header_scripts() {
                     'popper',
                 ),
                 '1.0.0',true );
+            wp_localize_script( 'custom', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));
 
-            // Enqueue Scripts
+        // Enqueue Scripts
             wp_enqueue_script( 'custom' );
     }
 }
@@ -506,7 +530,7 @@ add_filter( 'wp_nav_menu_args', 'my_wp_nav_menu_args' ); // Remove surrounding <
 add_filter( 'the_category', 'remove_category_rel_from_category_list' ); // Remove invalid rel attribute
 add_filter( 'the_excerpt', 'shortcode_unautop' ); // Remove auto <p> tags in Excerpt (Manual Excerpts only)
 add_filter( 'the_excerpt', 'do_shortcode' ); // Allows Shortcodes to be executed in Excerpt (Manual Excerpts only)
-add_filter( 'excerpt_more', 'html5_blank_view_article' ); // Add 'View Article' button instead of [...] for Excerpts
+//add_filter( 'excerpt_more', 'html5_blank_view_article' ); // Add 'View Article' button instead of [...] for Excerpts
 add_filter( 'show_admin_bar', 'remove_admin_bar' ); // Remove Admin bar
 add_filter( 'style_loader_tag', 'html5_style_remove' ); // Remove 'text/css' from enqueued stylesheet
 add_filter( 'post_thumbnail_html', 'remove_thumbnail_dimensions', 10 ); // Remove width and height dynamic attributes to thumbnails
@@ -577,3 +601,50 @@ function html5_shortcode_demo( $atts, $content = null ) {
 function html5_shortcode_demo_2( $atts, $content = null ) {
     return '<h2>' . $content . '</h2>';
 }
+
+
+add_action("wp_ajax_contact", "handle_contact");
+add_action("wp_ajax_nopriv_contact", "handle_contact");
+
+function handle_contact(){
+    if ( !wp_verify_nonce( $_REQUEST['contact_nonce'], "contact")) {
+        exit("No naughty business please");
+    }
+    else{
+        if (isset($_POST['name']) && isset($_POST['email']) && isset($_POST['subject']) && isset($_POST['message'])){
+            $to = get_option('admin_email');
+            $subject = 'A new message appeared [Derrekspace]';
+            $body = '<table style="height: 228px; width: 483px;" border="0"><caption>
+                        <h2>A new message just appeared in your contact form</h2>
+                        </caption>
+                        <tbody>
+                        <tr style="height: 45px;">
+                        <td style="width: 116px; height: 45px;">Name</td>
+                        <td style="width: 351px; height: 45px;">'.$_POST['name'].'</td>
+                        </tr>
+                        <tr style="height: 45px;">
+                        <td style="width: 116px; height: 45px;">Subject</td>
+                        <td style="width: 351px; height: 45px;">'.$_POST['subject'].'</td>
+                        </tr>
+                        <tr style="height: 44px;">
+                        <td style="width: 116px; height: 44px;">Email address</td>
+                        <td style="width: 351px; height: 44px;">'.$_POST['email'].'</td>
+                        </tr>
+                        <tr style="height: 144px;">
+                        <td style="width: 116px; height: 144px;">Message</td>
+                        <td style="width: 351px; height: 144px;">'.$_POST['message'].'</td>
+                        </tr>
+                        </tbody>
+                        </table>';
+            $headers = array('Content-Type: text/html; charset=UTF-8' , "Reply-To: ".$_POST['name']." <".$_POST['email'].">");
+
+            if (wp_mail( $to, $subject, $body, $headers )){
+                exit("success");
+            }
+            else{
+                exit("Failed");
+            }
+        }
+    }
+}
+

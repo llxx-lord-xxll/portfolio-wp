@@ -100,11 +100,11 @@
 
 			var form = $(this);
 			$.ajax({
-				url: form.attr("action"),
+				url: myAjax.ajaxurl,
 				method: form.attr("method"),
 				data: form.serialize(),
 				success: function(result) {
-					if (result == "success") {
+					if (result === "success") {
 						$(".form-inputs").css("display", "none");
 						$(".box p").css("display", "none");
 						$(".contactform").find(".output_message").addClass("success");

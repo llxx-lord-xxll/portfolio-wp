@@ -16,7 +16,7 @@
 		<?php wp_head(); ?>
 
 	</head>
-	<body <?php body_class('home'); ?>>
+	<body <?php body_class(); ?>>
         <!-- header -->
         <header class="header" id="navbar-collapse-toggle">
 
