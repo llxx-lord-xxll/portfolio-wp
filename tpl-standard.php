@@ -9,7 +9,10 @@
             <span class="title-bg"><?php the_field('subtitle'); ?></span>
         </section>
 		<?php if ( have_posts()) : while ( have_posts() ) : the_post(); ?>
-				<?php the_content(); ?>
+        <section class="<?php the_field('main_section_classes'); ?>">
+            <?php the_content(); ?>
+        </section>
+
 		<?php endwhile; ?>
 
 		<?php else : ?>

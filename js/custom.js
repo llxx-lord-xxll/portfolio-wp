@@ -7,11 +7,14 @@
     /* ----------------------------------------------------------- */
 
 	function stop_videos() {
-		var video = document.getElementById("video");
-		if (video.paused !== true && video.ended !== true) {
-			video.pause();
+		var video = $('.slideshow li.current video').get(0);
+		if (video){
+			if (video.paused !== true && video.ended !== true) {
+				video.pause();
+			}
 		}
-		$('.youtube-video')[0].contentWindow.postMessage('{"event":"command","func":"' + 'pauseVideo' + '","args":""}', '*');
+
+		$('.slideshow li.current iframe')[0].contentWindow.postMessage('{"event":"command","func":"' + 'pauseVideo' + '","args":""}', '*');
 	}
 
 	$(document).ready(function() {

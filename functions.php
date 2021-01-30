@@ -509,7 +509,7 @@ add_action( 'wp_print_scripts', 'html5blank_conditional_scripts' ); // Add Condi
 add_action( 'get_header', 'enable_threaded_comments' ); // Enable Threaded Comments
 add_action( 'wp_enqueue_scripts', 'html5blank_styles' ); // Add Theme Stylesheet
 add_action( 'init', 'register_html5_menu' ); // Add HTML5 Blank Menu
-add_action( 'init', 'create_post_type_html5' ); // Add our HTML5 Blank Custom Post Type
+add_action( 'init', 'create_post_type_portfolio' ); // Add our HTML5 Blank Custom Post Type
 add_action( 'widgets_init', 'my_remove_recent_comments_style' ); // Remove inline Recent Comment Styles from wp_head()
 add_action( 'init', 'html5wp_pagination' ); // Add our HTML5 Pagination
 
@@ -545,7 +545,7 @@ add_filter( 'image_send_to_editor', 'remove_width_attribute', 10 ); // Remove wi
 remove_filter( 'the_excerpt', 'wpautop' ); // Remove <p> tags from Excerpt altogether
 
 // Shortcodes
-add_shortcode( 'html5_shortcode_demo', 'html5_shortcode_demo' ); // You can place [html5_shortcode_demo] in Pages, Posts now.
+add_shortcode( 'portfolio_gallery', 'portfolio_gallery' ); // You can place [html5_shortcode_demo] in Pages, Posts now.
 add_shortcode( 'html5_shortcode_demo_2', 'html5_shortcode_demo_2' ); // Place [html5_shortcode_demo_2] in Pages, Posts now.
 
 // Shortcodes above would be nested like this -
@@ -556,39 +556,40 @@ add_shortcode( 'html5_shortcode_demo_2', 'html5_shortcode_demo_2' ); // Place [h
 \*------------------------------------*/
 
 // Create 1 Custom Post type for a Demo, called HTML5-Blank
-function create_post_type_html5() {
-    register_taxonomy_for_object_type( 'category', 'html5-blank' ); // Register Taxonomies for Category
-    register_taxonomy_for_object_type( 'post_tag', 'html5-blank' );
-    register_post_type( 'html5-blank', // Register Custom Post Type
+function create_post_type_portfolio() {
+    register_taxonomy_for_object_type( 'category', 'portfolio' ); // Register Taxonomies for Category
+    register_taxonomy_for_object_type( 'post_tag', 'portfolio' );
+    register_post_type( 'portfolio', // Register Custom Post Type
         array(
         'labels'       => array(
-            'name'               => esc_html( 'HTML5 Blank Custom Post', 'html5blank' ), // Rename these to suit
-            'singular_name'      => esc_html( 'HTML5 Blank Custom Post', 'html5blank' ),
-            'add_new'            => esc_html( 'Add New', 'html5blank' ),
-            'add_new_item'       => esc_html( 'Add New HTML5 Blank Custom Post', 'html5blank' ),
-            'edit'               => esc_html( 'Edit', 'html5blank' ),
-            'edit_item'          => esc_html( 'Edit HTML5 Blank Custom Post', 'html5blank' ),
-            'new_item'           => esc_html( 'New HTML5 Blank Custom Post', 'html5blank' ),
-            'view'               => esc_html( 'View HTML5 Blank Custom Post', 'html5blank' ),
-            'view_item'          => esc_html( 'View HTML5 Blank Custom Post', 'html5blank' ),
-            'search_items'       => esc_html( 'Search HTML5 Blank Custom Post', 'html5blank' ),
-            'not_found'          => esc_html( 'No HTML5 Blank Custom Posts found', 'html5blank' ),
-            'not_found_in_trash' => esc_html( 'No HTML5 Blank Custom Posts found in Trash', 'html5blank' ),
+            'name'               => esc_html( 'Portfolios', 'errorxit-portfoliowp' ), // Rename these to suit
+            'singular_name'      => esc_html( 'Portfolio', 'errorxit-portfoliowp' ),
+            'add_new'            => esc_html( 'Add New', 'errorxit-portfoliowp' ),
+            'add_new_item'       => esc_html( 'Add New HTML5 Blank Custom Post', 'errorxit-portfoliowp' ),
+            'edit'               => esc_html( 'Edit', 'errorxit-portfoliowp' ),
+            'edit_item'          => esc_html( 'Edit Portfolio', 'errorxit-portfoliowp' ),
+            'new_item'           => esc_html( 'New Portfolio', 'errorxit-portfoliowp' ),
+            'view'               => esc_html( 'View Portfolio', 'errorxit-portfoliowp' ),
+            'view_item'          => esc_html( 'View Portfolio', 'errorxit-portfoliowp' ),
+            'search_items'       => esc_html( 'Search Portfolios', 'errorxit-portfoliowp' ),
+            'not_found'          => esc_html( 'No Portfolio found', 'errorxit-portfoliowp' ),
+            'not_found_in_trash' => esc_html( 'No Portfolios found in Trash', 'errorxit-portfoliowp' ),
         ),
-        'public'       => true,
-        'hierarchical' => true, // Allows your posts to behave like Hierarchy Pages
-        'has_archive'  => true,
-        'supports'     => array(
-            'title',
-            'editor',
-            'excerpt',
-            'thumbnail'
-        ), // Go to Dashboard Custom HTML5 Blank post for supports
-        'can_export'   => true, // Allows export in Tools > Export
-        'taxonomies'   => array(
-            'post_tag',
-            'category'
-        ) // Add Category and Post Tags support
+            'menu_icon'           =>    'dashicons-portfolio',
+            'public'       => true,
+            'hierarchical' => true, // Allows your posts to behave like Hierarchy Pages
+            'has_archive'  => true,
+            'show_in_rest' => true,
+            'supports'     => array(
+                'title',
+                'thumbnail',
+                'editor'
+            ), // Go to Dashboard Custom HTML5 Blank post for supports
+            'can_export'   => true, // Allows export in Tools > Export
+            'taxonomies'   => array(
+                'post_tag',
+                'category'
+            ) // Add Category and Post Tags support
     ) );
 }
 
@@ -597,8 +598,64 @@ function create_post_type_html5() {
 \*------------------------------------*/
 
 // Shortcode Demo with Nested Capability
-function html5_shortcode_demo( $atts, $content = null ) {
-    return '<div class="shortcode-demo">' . do_shortcode( $content ) . '</div>'; // do_shortcode allows for nested Shortcodes
+function portfolio_gallery( $atts, $content = null ) {
+
+    $portfolio_html =  '<div id="grid-gallery" class="container grid-gallery">
+        <section class="grid-wrap">
+            <ul class="row grid">';
+
+    $args = array(
+        'post_type'=> 'portfolio',
+        'order'    => 'ASC'
+    );
+
+    $the_query = new WP_Query( $args );
+    if($the_query->have_posts() ) :
+        while ( $the_query->have_posts() ) :
+            $the_query->the_post();
+            $portfolio_html .= '<li><figure>' . get_the_post_thumbnail( array( 350, 350 ) ) . '<div><span>' . get_the_title() . '</span></div>' . '</figure></li>';
+        endwhile;
+        wp_reset_postdata();
+    endif;
+
+    $portfolio_html .= '</ul></section>';
+
+    $portfolio_html .= '<section class="slideshow"><ul>';
+    $args = array(
+        'post_type'=> 'portfolio',
+        'order'    => 'ASC'
+    );
+
+    $the_query = new WP_Query( $args );
+    if($the_query->have_posts() ) :
+        while ( $the_query->have_posts() ) :
+            $the_query->the_post();
+            $url = parse_url(get_field('preview_link'));
+
+            if (isset($url['host']))
+                $url = $url['host'];
+            else
+                $url = '';
+
+            $portfolio_html .= '<li><figure><figcaption>';
+            $portfolio_html .= "<h3>". get_the_title() ."</h3>";
+            $portfolio_html .= '<div class="row open-sans-font">';
+
+
+            $portfolio_html .= '</div></figcaption>' . apply_filters('the_content',get_the_content());
+            $portfolio_html .= '</figure></li>';
+
+        endwhile;
+        wp_reset_postdata();
+    endif;
+
+    $portfolio_html .= '</ul>';
+
+    $portfolio_html .= '<nav><span class="icon nav-prev"><img src="'.get_stylesheet_directory_uri() . '/img/left-arrow.png'.'" alt="previous"></span><span class="icon nav-next"><img src="'.get_stylesheet_directory_uri() . '/img/right-arrow.png'.'" alt="next"></span><span class="nav-close"><img src="'.get_stylesheet_directory_uri() . '/img/close-button.png'.'" alt="close"> </span></nav>';
+
+    $portfolio_html .= '</section></div>';
+
+    return $portfolio_html;
 }
 
 // Demo Heading H2 shortcode, allows for nesting within above element. Fully expandable.
