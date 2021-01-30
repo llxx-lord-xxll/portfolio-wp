@@ -275,16 +275,7 @@ function html5blank_styles() {
                 'circle',
                 'preloader',
                 'styleswitcher',
-                'skin-blue',
-                'skin-blueviolet',
-                'skin-goldenrod',
-                'skin-green',
-                'skin-magenta',
-                'skin-orange',
-                'skin-purple',
-                'skin-red',
-                'skin-yellow',
-                'skin-yellowgreen',
+                get_theme_mod( 'portfoliowp_select_themecolor', 'skin-blue' )
             ), '1.0' );
         wp_register_style( 'portfolio-wp-stylesheet', get_template_directory_uri() . '/style.css', '1.0' );
 
@@ -714,3 +705,33 @@ function wp_portfolio_custom_excerpt_length( $length ) {
     return 20;
 }
 add_filter( 'excerpt_length', 'wp_portfolio_custom_excerpt_length', 999 );
+
+function portfoliowp_customize_register( $wp_customize ) {
+    $wp_customize->add_section('portfoliowp_settings', array(
+        'title'          => 'Theme settings'
+    ));
+//adding setting for footer text area
+    $wp_customize->add_setting('portfoliowp_select_themecolor', array(
+        'default'        => 'skin-blue',
+    ));
+
+    $wp_customize->add_control( 'portfoliowp_select_themecolor', array(
+        'type' => 'select',
+        'section' => 'portfoliowp_settings', // Add a default or your own section
+        'label' => __( 'Custom Select Option' ),
+        'description' => __( 'This is a custom select option.' ),
+        'choices' => array(
+            'skin-blue' => __( 'Blue' ),
+            'skin-blueviolet' => __( 'Blue Violet' ),
+            'skin-goldenrod' => __( 'Green Rod' ),
+            'skin-green' => __( 'Green' ),
+            'skin-magenta' => __( 'Magenta' ),
+            'skin-orange' => __( 'Orange' ),
+            'skin-purple' => __( 'Purple' ),
+            'skin-red' => __( 'Red' ),
+            'skin-yellow' => __( 'Yellow' ),
+            'skin-yellowgreen' => __( 'Yellow Green' ),
+        ),
+    ) );
+}
+add_action( 'customize_register', 'portfoliowp_customize_register' );
